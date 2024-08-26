@@ -73,8 +73,14 @@ class _HomePageState extends State<HomePage> {
       } else {
         buffer += data;
         print("before:$buffer");
-        String line = buffer.toString().split('\n').first;
+        String line = buffer;
+        line = line.replaceAll('\n', '');
         line = line.split('|').last;
+        if (line.contains('|') || line.contains('\n')) {
+          continue;
+        }
+        // ~~|~~|\n
+        print("after:$line");
         line.split(',').forEach((element) {
           elements.add(Text(element));
         });
