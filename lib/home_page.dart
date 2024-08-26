@@ -95,12 +95,12 @@ class _HomePageState extends State<HomePage> {
         }
 
         try {
-          for (int i = 0; i < 10; i++) {
+          for (int i = 0; i < 12; i++) {
             chData[i] = double.parse(line.split(',')[i].split(':').last);
           }
 
-          // 角度をラジアンで求める
-          angleRadians = atan2(chData[4] * -1, chData[2]);
+          // // 角度をラジアンで求める
+          // angleRadians = atan2(chData[4] * -1, chData[2]);
         } catch (e) {
           print(e);
           print("continue");
@@ -327,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                           alignment: Alignment.center,
                           // angleRadians
                           child: Transform.rotate(
-                            angle: angleRadians * (180 / pi),
+                            angle: chData[11],
                             child: const Icon(
                               Icons.south,
                               size: 80,
