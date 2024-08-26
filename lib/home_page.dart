@@ -20,6 +20,9 @@ class _HomePageState extends State<HomePage> {
   SerialPort? _port;
   String line = "";
 
+  List<double> chData = List.generate(10, (i) => 0.0);
+  List<Widget> elements = [];
+
   final _controller1 = TextEditingController();
 
   Future<void> _openPort() async {
@@ -57,23 +60,34 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _startReceiving(SerialPort port) async {
     final reader = port.readable.reader;
-    StringBuffer buffer = StringBuffer();
+    String buffer = "";
 
     while (true) {
       ReadableStreamDefaultReadResult result = await reader.read();
       if (result.done) break;
 
       String data = String.fromCharCodes(result.value);
-      buffer.write(data);
-
-      while (buffer.toString().contains('\n')) {
+      // print(data.contains('\n'));
+      if (!data.contains('\n')) {
+        buffer += data;
+      } else {
+        buffer += data;
+        print("before:$buffer");
         String line = buffer.toString().split('\n').first;
-        buffer = StringBuffer(buffer.toString().substring(line.length + 1));
-        // print(line);
+        line = line.split('|').last;
+        line.split(',').forEach((element) {
+          elements.add(Text(element));
+        });
 
+        for (int i = 0; i < 10; i++) {
+          chData[i] = double.parse(line.split(',')[i].split(':').last);
+        }
         setState(() {
           this.line = line;
+          chData;
+          // elements;
         });
+        buffer = "";
       }
     }
   }
@@ -111,64 +125,42 @@ class _HomePageState extends State<HomePage> {
           const Gap(12),
           // 受信データ表示
           Text(line),
+          const Divider(),
           // グラフ表示
           Row(
             children: [
+              const Gap(32),
               SizedBox(
-                width: size.width / 2,
-                height: size.height / 2,
-                child: BarChart(
-                  BarChartData(
-                    barGroups: List.generate(10, (i) {
-                      return BarChartGroupData(
-                        x: i + 1,
-                        barRods: [
-                          BarChartRodData(
-                            toY: i.toDouble() - 5,
-                            color: Colors.blue,
+                width: size.height / 1.75,
+                height: size.height / 1.75,
+                child: Row(
+                  children: List.generate(10, (int index) {
+                    return SizedBox(
+                      width: size.height / 1.75 / 10,
+                      height: size.height / 1.75,
+                      child: Column(
+                        children: [
+                          const Gap(32),
+                          SizedBox(
+                            width: size.height / 3 / 10,
+                            height: size.height / 1.75 - 81,
+                            child: ValueLine(
+                              value: chData[index],
+                              // height: 20,
+                            ),
+                          ),
+                          const Gap(32),
+                          Text(
+                            '${index + 1}ch',
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ],
-                      );
-                    }),
-                    gridData: FlGridData(
-                      show: true,
-                      drawHorizontalLine: true,
-                      drawVerticalLine: false,
-                      horizontalInterval: 1, // 1単位で水平線を表示
-                      getDrawingHorizontalLine: (value) {
-                        return const FlLine(
-                          color: Colors.grey,
-                          strokeWidth: 0.5,
-                        );
-                      },
-                    ),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          interval: 1, // 1単位で表示
-                          getTitlesWidget: (value, meta) {
-                            return Text(value.toString());
-                          },
-                        ),
                       ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          interval: 1,
-                          getTitlesWidget: (value, meta) {
-                            return Text("${value}ch");
-                          },
-                        ),
-                      ),
-                      topTitles: const AxisTitles(),
-                      leftTitles: const AxisTitles(),
-                    ),
-                  ),
+                    );
+                  }),
                 ),
               ),
-              Gap(((size.width / 2) - (size.height / 2)) / 2),
+              const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -316,9 +308,25 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  const Gap(32),
                 ],
               ),
-              Gap(((size.width / 2) - (size.height / 2)) / 2),
+              const Spacer(),
+              Container(
+                width: size.height / 3,
+                height: size.height / 1.75,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: elements,
+                  ),
+                ),
+              ),
+              const Gap(32),
             ],
           ),
           const Spacer(),
@@ -349,6 +357,58 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ValueLine extends StatelessWidget {
+  final double value;
+  final Color? color;
+  // final double height;
+
+  const ValueLine({super.key, required this.value, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.sizeOf(context).height / 1.75 - 81;
+    double localValue = value;
+    if (value > 1) {
+      localValue = 1;
+    } else if (value < -1) {
+      localValue = -1;
+    }
+    return Column(
+      children: value > 0
+          ? [
+              Container(
+                width: 5,
+                height: height / 2 - (height / 2 * localValue),
+              ),
+              Container(
+                width: 5,
+                height: height / 2 * localValue,
+                color: color ?? Colors.blue,
+              ),
+              Container(
+                width: 5,
+                height: height / 2,
+              ),
+            ]
+          : [
+              Container(
+                width: 5,
+                height: height / 2,
+              ),
+              Container(
+                width: 5,
+                height: height / 2 * localValue.abs(),
+                color: color ?? Colors.blue,
+              ),
+              Container(
+                width: 5,
+                height: height / 2 - (height / 2 * localValue.abs()),
+              ),
+            ],
     );
   }
 }
