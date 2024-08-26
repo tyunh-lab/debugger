@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:html';
-// import 'dart:math';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   SerialPort? _port;
   String line = "";
 
-  List<double> chData = List.generate(10, (i) => 0.0);
+  List<double> chData = List.generate(12, (i) => 0.0);
   List<Widget> elements = [];
 
   double angleRadians = 0.0;
@@ -77,14 +77,18 @@ class _HomePageState extends State<HomePage> {
       } else {
         buffer += data;
         print("before:$buffer");
+
         String line = buffer;
-        line = line.replaceAll('\n', '');
-        line = line.split('|').last;
+        line = line.replaceAll('\n', '|');
+        print("after1:${line.split('|')}");
+        line = line.split('|')[1];
+
         if (line.contains('|') || line.contains('\n')) {
+          buffer = "";
           continue;
         }
-        // ~~|~~|\n
-        print("after:$line");
+
+        print("after2:$line");
         try {
           line.split(',').forEach((element) {
             elements.add(Text(element));
@@ -92,6 +96,7 @@ class _HomePageState extends State<HomePage> {
         } catch (e) {
           print(e);
           print("continue");
+          buffer = "";
           continue;
         }
 
@@ -106,12 +111,15 @@ class _HomePageState extends State<HomePage> {
         } catch (e) {
           print(e);
           print("continue");
+          buffer = "";
           continue;
         }
+        print("chData:$chData");
 
         setState(() {
           this.line = line;
           chData;
+          imu;
           // elements;
         });
         buffer = "";
@@ -329,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                           alignment: Alignment.center,
                           // angleRadians
                           child: Transform.rotate(
-                            angle: imu,
+                            angle: math.pi + imu / 180 * math.pi,
                             child: const Icon(
                               Icons.south,
                               size: 80,
