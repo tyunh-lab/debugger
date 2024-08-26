@@ -2,12 +2,11 @@
 
 import 'dart:async';
 import 'dart:html';
-import 'dart:math';
+// import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:serial/serial.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   List<Widget> elements = [];
 
   double angleRadians = 0.0;
+
+  double imu = 0;
 
   final _controller1 = TextEditingController();
 
@@ -98,6 +99,7 @@ class _HomePageState extends State<HomePage> {
           for (int i = 0; i < 12; i++) {
             chData[i] = double.parse(line.split(',')[i].split(':').last);
           }
+          imu = chData[11];
 
           // // 角度をラジアンで求める
           // angleRadians = atan2(chData[4] * -1, chData[2]);
@@ -327,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                           alignment: Alignment.center,
                           // angleRadians
                           child: Transform.rotate(
-                            angle: chData[11],
+                            angle: imu,
                             child: const Icon(
                               Icons.south,
                               size: 80,
