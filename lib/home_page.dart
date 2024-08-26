@@ -81,13 +81,26 @@ class _HomePageState extends State<HomePage> {
         }
         // ~~|~~|\n
         print("after:$line");
-        line.split(',').forEach((element) {
-          elements.add(Text(element));
-        });
-
-        for (int i = 0; i < 10; i++) {
-          chData[i] = double.parse(line.split(',')[i].split(':').last);
+        try {
+          line.split(',').forEach((element) {
+            elements.add(Text(element));
+          });
+        } catch (e) {
+          print(e);
+          print("continue");
+          continue;
         }
+
+        try {
+          for (int i = 0; i < 10; i++) {
+            chData[i] = double.parse(line.split(',')[i].split(':').last);
+          }
+        } catch (e) {
+          print(e);
+          print("continue");
+          continue;
+        }
+
         setState(() {
           this.line = line;
           chData;
