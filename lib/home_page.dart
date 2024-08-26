@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -22,6 +23,8 @@ class _HomePageState extends State<HomePage> {
 
   List<double> chData = List.generate(10, (i) => 0.0);
   List<Widget> elements = [];
+
+  double angleRadians = 0.0;
 
   final _controller1 = TextEditingController();
 
@@ -95,6 +98,9 @@ class _HomePageState extends State<HomePage> {
           for (int i = 0; i < 10; i++) {
             chData[i] = double.parse(line.split(',')[i].split(':').last);
           }
+
+          // 角度をラジアンで求める
+          angleRadians = atan2(chData[4] * -1, chData[2]);
         } catch (e) {
           print(e);
           print("continue");
@@ -317,11 +323,15 @@ class _HomePageState extends State<HomePage> {
                             const Gap(75),
                           ],
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.center,
-                          child: Icon(
-                            Icons.south,
-                            size: 80,
+                          // angleRadians
+                          child: Transform.rotate(
+                            angle: angleRadians * (180 / pi),
+                            child: const Icon(
+                              Icons.south,
+                              size: 80,
+                            ),
                           ),
                         )
                       ],
