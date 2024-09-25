@@ -85,10 +85,10 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: d0f0d49112f2f4b192481c16d05b6418bd7820e021e265a3c22db98acf7ed7fb
+      sha256: "94307bef3a324a0d329d3ab77b2f0c6e5ed739185ffc029ed28c0f9b019ea7ef"
       url: "https://pub.dev"
     source: hosted
-    version: "0.68.0"
+    version: "0.69.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -123,14 +123,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.7"
   leak_tracker:
     dependency: transitive
     description:
@@ -211,14 +203,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
-  serial:
-    dependency: "direct main"
-    description:
-      name: serial
-      sha256: "7c1c6ecd1a73aa249c49db6014de23c069e9d56c36a03e5715e748b6e5dc918d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
